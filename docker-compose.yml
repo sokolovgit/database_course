@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: lab2
+    volumes:
+      - ./lab2/lab2.sql:/docker-entrypoint-initdb.d/01_lab2.sql  
+      - ./lab2/fill.sql:/docker-entrypoint-initdb.d/02_fill.sql
+      - ./csvs:/docker-entrypoint-initdb.d/csvs
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    user: root
+
+    entrypoint: /bin/sh -c "chmod 600 /pgpass; /entrypoint.sh;"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json 
+      - ./pgpass:/pgpass
