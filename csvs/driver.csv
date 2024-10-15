@@ -1,0 +1,21 @@
+id,name,license_number,employment_date,team_id
+1,John Driver1,ABC1234,2018-05-01,1
+2,Mary Driver2,DEF5678,2019-06-15,2
+3,David Driver3,GHI9012,2017-08-23,3
+4,Linda Driver4,JKL3456,2020-10-12,4
+5,Robert Driver5,MNO7890,2021-03-22,5
+6,Patricia Driver6,PQR1234,2016-11-30,6
+7,James Driver7,STU5678,2018-01-25,7
+8,Barbara Driver8,VWX9012,2019-09-14,8
+9,Michael Driver9,YZA3456,2020-02-28,9
+10,Elizabeth Driver10,BCD7890,2017-07-17,10
+11,Christopher Driver11,EFG1234,2018-03-05,1
+12,Jessica Driver12,HIJ5678,2019-12-20,2
+13,Daniel Driver13,KLM9012,2017-11-11,3
+14,Susan Driver14,NOP3456,2020-06-30,4
+15,Matthew Driver15,QRS7890,2021-01-10,5
+16,Karen Driver16,TUV1234,2016-04-25,6
+17,Anthony Driver17,WXY5678,2018-09-19,7
+18,Nancy Driver18,ZAB9012,2019-05-07,8
+19,Mark Driver19,CDE3456,2020-11-22,9
+20,Dorothy Driver20,FGH7890,2017-02-14,10

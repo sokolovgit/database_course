@@ -1,0 +1,21 @@
+id,registration_number,model,brand,year_of_manufacture,status,vehicle_type_id,capacity,load_capacity,team_id
+1,ABC-123,BX123,Ford,2018,active,1,40,10.5,1
+2,DEF-456,TX987,Toyota,2019,active,2,4,1.2,2
+3,GHI-789,VZ321,Mercedes,2017,inactive,3,2,15.0,3
+4,JKL-012,CV987,Hyundai,2020,active,1,50,12.0,4
+5,MNO-345,LM456,Nissan,2021,inactive,4,10,5.6,5
+6,PQR-678,XY123,Honda,2016,active,2,5,1.5,6
+7,STU-901,AB456,Chevrolet,2015,inactive,3,2,14.0,7
+8,VWX-234,CD789,BMW,2014,active,1,45,11.0,8
+9,YZA-567,EF012,Audi,2013,inactive,4,8,4.5,9
+10,BCD-890,GH345,Volkswagen,2012,active,2,6,2.0,10
+11,EFG-123,IJ678,Volvo,2011,inactive,3,2,13.0,11
+12,HIJ-456,KL901,Peugeot,2010,active,1,55,13.5,12
+13,KLM-789,MN234,Renault,2009,inactive,4,12,6.0,13
+14,NOP-012,OP567,Fiat,2008,active,2,7,2.5,14
+15,QRS-345,QR890,Jeep,2007,inactive,3,2,12.0,15
+16,TUV-678,ST123,Subaru,2006,active,1,60,14.5,16
+17,WXY-901,UV456,Mazda,2005,inactive,4,15,7.0,17
+18,YZA-234,WX789,Jaguar,2004,active,2,9,3.0,18
+19,BCD-567,YZ012,Land Rover,2003,inactive,3,2,11.0,19
+20,EFG-890,AB345,Alfa Romeo,2002,active,1,65,15.5,20
