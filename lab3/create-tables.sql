@@ -1,37 +1,46 @@
-CREATE TABLE foreman (
-    id SERIAL NOT NULL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
+CREATE TYPE vehicle_status AS ENUM (
+    'available',
+    'in_service',
+    'under_maintenance',
+    'decommissioned'
 );
 
+-- Step 1: Create the team table without the foreign key to driver
 CREATE TABLE team (
-    id SERIAL NOT NULL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    foreman_id INT,
-    FOREIGN KEY (foreman_id) REFERENCES foreman(id) ON DELETE SET NULL
+    foreman_id INT  -- Add the foreign key later
 );
 
+-- Step 2: Create the driver table with the foreign key to team
 CREATE TABLE driver (
-    id SERIAL NOT NULL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     license_number VARCHAR(50) UNIQUE NOT NULL,
     employment_date DATE,
     team_id INT,
     FOREIGN KEY (team_id) REFERENCES team(id) ON DELETE SET NULL
 );
 
+-- Step 3: Alter the team table to add the foreign key to driver
+ALTER TABLE team
+ADD CONSTRAINT fk_foreman
+FOREIGN KEY (foreman_id) REFERENCES driver(id) ON DELETE SET NULL;
+
 CREATE TABLE vehicle_type (
-    id SERIAL NOT NULL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     description TEXT
 );
 
 CREATE TABLE vehicle (
-    id SERIAL NOT NULL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     registration_number VARCHAR(50) UNIQUE NOT NULL,
     model VARCHAR(50),
     brand VARCHAR(50),
     year_of_manufacture INT CHECK (year_of_manufacture >= 1886 AND year_of_manufacture <= EXTRACT(YEAR FROM CURRENT_DATE)),
-    status VARCHAR(50),
+    status vehicle_status, 
     vehicle_type_id INT,
     capacity INT CHECK (capacity > 0),
     load_capacity DECIMAL(10, 2) CHECK (load_capacity >= 0),
@@ -41,7 +50,7 @@ CREATE TABLE vehicle (
 );
 
 CREATE TABLE route (
-    id SERIAL NOT NULL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     start_location VARCHAR(100) NOT NULL,
     end_location VARCHAR(100) NOT NULL,
@@ -49,7 +58,7 @@ CREATE TABLE route (
 );
 
 CREATE TABLE passenger_record (
-    id SERIAL NOT NULL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     vehicle_id INT,
     route_id INT,
     date DATE NOT NULL,
