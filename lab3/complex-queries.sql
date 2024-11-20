@@ -154,7 +154,7 @@ RIGHT JOIN
     route ON vehicle_route.route_id = route.id;
 
 
--- h. Об’єднання та перетин запитів
+-- h. Об’єднання запитів
 
 -- Виводить список всіх номерів ТЗ які або Автобуси, або на маршрутах із маршрутом більше 80 км
 
@@ -189,6 +189,33 @@ JOIN
     route ON vehicle_route.route_id = route.id
 WHERE 
     route.distance > 80;
+
+
+-- h. Перетин  запитів
+
+-- Виводить список всіх номерів ТЗ які і Таксі, і на маршрутах із дистанцією більше менше 15 км
+
+SELECT 
+    registration_number
+FROM 
+    vehicle
+JOIN 
+    vehicle_type ON vehicle.vehicle_type_id = vehicle_type.id
+WHERE 
+    vehicle_type.name = 'Taxi'
+
+INTERSECT 
+
+SELECT 
+    registration_number
+FROM 
+    vehicle
+JOIN 
+    vehicle_route ON vehicle.id = vehicle_route.vehicle_id
+JOIN 
+    route ON vehicle_route.route_id = route.id
+WHERE 
+    route.distance < 15;
 
 
 
