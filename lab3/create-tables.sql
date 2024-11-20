@@ -82,8 +82,11 @@ CREATE TABLE vehicle_route (
     route_id INT,
     departure_time TIME NOT NULL,
     arrival_time TIME NOT NULL,
+    assignment_date DATE,
     PRIMARY KEY (vehicle_id, route_id),
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id) ON DELETE CASCADE,
     FOREIGN KEY (route_id) REFERENCES route(id) ON DELETE CASCADE
 );
+
+
 
