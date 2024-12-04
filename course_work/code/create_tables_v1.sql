@@ -118,3 +118,4 @@ ALTER TABLE
     "accident_protocols" ADD CONSTRAINT "accident_protocols_driver_id_foreign" FOREIGN KEY("driver_id") REFERENCES "drivers"("id");
 ALTER TABLE
     "evidences" ADD CONSTRAINT "evidences_violation_id_foreign" FOREIGN KEY("violation_id") REFERENCES "violations"("id");
+
