@@ -16,25 +16,39 @@ CREATE TABLE citizens (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     patronymic VARCHAR(50),
-    date_of_birth DATE NOT NULL
-
+    date_of_birth DATE NOT NULL,
+    -- людині не може бути більше 120 років і вона має бути народжена до сьогодні
+    CONSTRAINT check_date_of_birth CHECK (
+        date_of_birth > CURRENT_DATE - INTERVAL '120 years'
+        AND date_of_birth < CURRENT_DATE
+    )
 );
 
 CREATE TABLE drivers (
     id SERIAL PRIMARY KEY,
     citizen_id INT NOT NULL,
-    -- ВХЕ022154
-    license_number CHAR(9) NOT NULL,
+    license_number CHAR(9) UNIQUE NOT NULL,
     license_issued_time TIMESTAMPTZ NOT NULL,
-    CONSTRAINT fk_citizen_id FOREIGN KEY (citizen_id) REFERENCES citizens(id) ON DELETE CASCADE
+    CONSTRAINT fk_citizen_id FOREIGN KEY (citizen_id) REFERENCES citizens(id) ON DELETE CASCADE,
+    -- перевірка на правильність номеру посвідчення водія (LLLNNNNNN  - 3 літери, 6 цифр)
+    CONSTRAINT check_license_number CHECK (
+        license_number ~ '^[A-Z]{3}[0-9]{6}$'
+    ),
+    -- перевірка на те, що час видачі посвідчення водія не може бути у майбутньому
+    CONSTRAINT check_license_issued_time CHECK (
+        license_issued_time < CURRENT_TIMESTAMP
+    )
 );
 
 CREATE TABLE police_officers (
     id SERIAL PRIMARY KEY,
     citizen_id INT NOT NULL,
-    -- ВХЕ022154
-    badge_number CHAR(9) NOT NULL,
-    CONSTRAINT fk_citizen_id FOREIGN KEY (citizen_id) REFERENCES citizens(id) ON DELETE CASCADE
+    badge_number CHAR(9) UNIQUE NOT NULL,
+    CONSTRAINT fk_citizen_id FOREIGN KEY (citizen_id) REFERENCES citizens(id) ON DELETE CASCADE,
+    -- перевірка на правильність номеру жетона поліцейського (LLLNNNNNN  - 3 літери, 6 цифр)
+    CONSTRAINT check_badge_number CHECK (
+        badge_number ~ '^[A-Z]{3}[0-9]{6}$'
+    )
 );
 
 CREATE TABLE vehicle_types (
@@ -58,23 +72,37 @@ CREATE TABLE vehicles (
     seating_capacity INT,
     year_of_manufacture INT NOT NULL,
     CONSTRAINT fk_owner_id FOREIGN KEY (owner_id) REFERENCES citizens(id) ON DELETE CASCADE,
-    CONSTRAINT fk_vehicle_type_id FOREIGN KEY (vehicle_type_id) REFERENCES vehicle_types(id) ON DELETE CASCADE
+    CONSTRAINT fk_vehicle_type_id FOREIGN KEY (vehicle_type_id) REFERENCES vehicle_types(id) ON DELETE CASCADE,
+    CONSTRAINT check_valid_vin CHECK (
+        vin ~ $$[A-HJ-NPR-Z0-9]{17}$$
+    ),
+    CONSTRAINT check_year_of_manufacture CHECK (
+        year_of_manufacture >= 1886
+        AND year_of_manufacture <= EXTRACT(
+            YEAR
+            FROM
+                CURRENT_DATE
+        )
+    )
 );
 
 CREATE TABLE traffic_rules (
     id SERIAL PRIMARY KEY,
     article INT NOT NULL,
     part INT NOT NULL,
-    description TEXT
+    description TEXT,
+    CONSTRAINT unique_article_part UNIQUE (article, part)
 );
 
 CREATE TABLE administrative_offenses (
     id SERIAL PRIMARY KEY,
-    article INT NOT NULL,
-    sup INT,
-    part INT,
+    article INT NOT NULL CHECK (article >= 1),
+    sup INT CHECK (sup >= 1),
+    part INT CHECK (part >= 1),
     description TEXT,
-    penalty_fee DECIMAL(10, 2) NOT NULL
+    penalty_fee DECIMAL(10, 2),
+    CONSTRAINT unique_article_sup_part UNIQUE (article, sup, part),
+    CONSTRAINT check_penalty_fee CHECK (penalty_fee >= 0)
 );
 
 CREATE TABLE locations (
@@ -88,7 +116,10 @@ CREATE TABLE locations (
 
 CREATE TABLE violations (
     id SERIAL PRIMARY KEY,
-    time_of_violation TIMESTAMPTZ NOT NULL,
+    time_of_violation TIMESTAMPTZ NOT NULL CHECK (
+        time_of_violation <= CURRENT_TIMESTAMP
+        AND time_of_violation > CURRENT_DATE - INTERVAL '10 years'
+    ),
     description TEXT,
     vehicle_id INT NOT NULL,
     location_id INT NOT NULL,
@@ -136,7 +167,7 @@ CREATE TABLE accident_resolutions (
     id SERIAL PRIMARY KEY,
     series CHAR(2) NOT NULL,
     number CHAR(6) NOT NULL,
-    time_of_considiration TIMESTAMPTZ NOT NULL,
+    time_of_consideration TIMESTAMPTZ NOT NULL,
     time_of_entry_into_force TIMESTAMPTZ NOT NULL,
     violation_id INT NOT NULL,
     police_officer_id INT NOT NULL,
@@ -145,3 +176,5 @@ CREATE TABLE accident_resolutions (
     CONSTRAINT fk_police_officer_id FOREIGN KEY (police_officer_id) REFERENCES police_officers(id) ON DELETE CASCADE,
     CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
 );
+
+DROP SCHEMA IF EXISTS public CASCADE;
