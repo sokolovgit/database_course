@@ -8,7 +8,7 @@ SELECT
     v.time_of_violation,
     v.description AS violation_description,
     tr.article || '.' || tr.part AS traffic_rule,
-    ao.article || COALESCE('(' || ao.sup || ').', '.') || ao.part AS administrative_offense,
+    get_administrative_offense_info(administrative_offense_id) AS administrative_offense,
     ao.description AS administrative_offense_description,
     ao.penalty_fee
 
@@ -42,3 +42,29 @@ SELECT
     END AS region
 FROM
     vehicles v;
+
+
+
+CREATE OR REPLACE VIEW driver_violation_summary AS
+SELECT
+    c.id AS driver_id,
+    get_citizen_full_name(c.id) AS driver_name,
+    COUNT(CASE WHEN ap.id IS NULL AND ar.id IS NULL THEN 1 END) AS violations_without_document,
+    COUNT(CASE WHEN ap.id IS NOT NULL AND ar.id IS NULL THEN 1 END) AS violations_with_protocol,
+    COUNT(CASE WHEN ar.id IS NOT NULL THEN 1 END) AS violations_with_resolution,
+    COUNT(v.id) AS total_violations,
+    SUM(ao.penalty_fee) AS total_penalty_fees
+FROM
+    citizens c
+JOIN
+    vehicles veh ON c.id = veh.owner_id
+JOIN
+    violations v ON veh.id = v.vehicle_id
+JOIN
+    administrative_offenses ao ON v.administrative_offense_id = ao.id
+LEFT JOIN
+    accident_protocols ap ON v.id = ap.violation_id
+LEFT JOIN
+    accident_resolutions ar ON v.id = ar.violation_id
+GROUP BY
+    c.id;
