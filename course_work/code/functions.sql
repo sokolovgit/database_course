@@ -114,3 +114,53 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION get_total_penalty_fees(driver_id INT)
+    RETURNS DECIMAL AS
+$$
+DECLARE
+    total_fees DECIMAL;
+BEGIN
+    SELECT SUM(ao.penalty_fee)
+    INTO total_fees
+    FROM violations v
+    JOIN vehicles veh ON v.vehicle_id = veh.id
+    JOIN administrative_offenses ao ON v.administrative_offense_id = ao.id
+    WHERE veh.owner_id = driver_id;
+
+    RETURN COALESCE(total_fees, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to get the full name of the owner of a specific vehicle
+CREATE OR REPLACE FUNCTION get_vehicle_owner(vehicle_id INT)
+    RETURNS VARCHAR AS
+$$
+DECLARE
+    owner_name VARCHAR;
+BEGIN
+    SELECT get_citizen_full_name(c.id)
+    INTO owner_name
+    FROM vehicles v
+    JOIN citizens c ON v.owner_id = c.id
+    WHERE v.id = vehicle_id;
+
+    RETURN owner_name;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_total_violations_for_vehicle(veh_id INT)
+RETURNS INT AS $$
+DECLARE
+    total_violations INT;
+BEGIN
+    SELECT COUNT(*)
+    INTO total_violations
+    FROM violations
+    WHERE violations.vehicle_id = veh_id;
+
+    RETURN total_violations;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
