@@ -47,7 +47,8 @@ CREATE TABLE drivers
         license_issued_time < CURRENT_TIMESTAMP
         ),
 
-    CONSTRAINT uq_license_number UNIQUE (license_number)
+    CONSTRAINT uq_license_number UNIQUE (license_number),
+    CONSTRAINT ck_is_driver_more_than_16_years_old CHECK (is_citizen_older_than(citizen_id, 16))
 );
 CREATE TABLE police_officers
 (
@@ -60,9 +61,8 @@ CREATE TABLE police_officers
     CONSTRAINT check_badge_number CHECK (
         badge_number ~ '^[A-Z]{3}[0-9]{6}$'
         ),
-    CONSTRAINT uq_badge_number UNIQUE (badge_number)
-
-
+    CONSTRAINT uq_badge_number UNIQUE (badge_number),
+    CONSTRAINT ck_is_police_officer_more_than_18_years_old CHECK (is_citizen_older_than(citizen_id, 18))
 );
 CREATE TABLE vehicle_types
 (
@@ -104,7 +104,7 @@ CREATE TABLE vehicles
         ),
 
     CONSTRAINT uq_vin UNIQUE (vin),
-    CONSTRAINT uq_insurance_policy_number UNIQUE (insurance_policy_number)
+    CONSTRAINT uq_insurance_policy_number UNIQUE NULLS NOT DISTINCT (insurance_policy_number)
 );
 CREATE TABLE traffic_rules
 (
@@ -215,4 +215,11 @@ CREATE TABLE accident_resolutions
     CONSTRAINT fk_police_officer_id FOREIGN KEY (police_officer_id) REFERENCES police_officers (id) ON DELETE CASCADE,
     CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE CASCADE,
     CONSTRAINT uq_series_number_resolution UNIQUE (series, number)
+);
+
+CREATE TABLE regions (
+    region_name VARCHAR(100),
+    code_2004 CHAR(2),
+    code_2013 CHAR(2),
+    code_2021 CHAR(2)
 );
