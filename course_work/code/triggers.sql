@@ -5,6 +5,11 @@ BEGIN
     IF NEW.engine_type = 'electric' AND NEW.engine_capacity IS NOT NULL THEN
         RAISE EXCEPTION 'Electric vehicles cannot have an engine capacity value.';
     END IF;
+
+    IF NEW.engine_capacity < 1 OR NEW.engine_capacity > 20 THEN
+        RAISE EXCEPTION  'Vehicles cannot have such engine capacity. ';
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -147,7 +152,6 @@ BEGIN
     IF NEW.time_of_entry_into_force <= NEW.time_of_consideration THEN
         RAISE EXCEPTION 'Time of entry into force must be after the time of consideration.';
     END IF;
-
 
     RETURN NEW;
 END;
