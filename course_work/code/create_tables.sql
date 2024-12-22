@@ -1,10 +1,4 @@
 CREATE SCHEMA IF NOT EXISTS public;
-CREATE TYPE ENGINE_TYPE AS ENUM (
-    'gasoline',
-    'diesel',
-    'electric',
-    'hybrid'
-    );
 CREATE TYPE EVIDENCE_TYPE AS ENUM ('photo', 'video');
 CREATE TYPE CITIZEN_ON_PROTOCOL_ROLE AS ENUM ('victim', 'witness');
 CREATE TYPE POLICE_OFFICER_RANK AS ENUM (
@@ -66,14 +60,25 @@ CREATE TABLE police_officers
 );
 CREATE TABLE vehicle_types
 (
-    id          SERIAL PRIMARY KEY,
-    name        VARCHAR(50) NOT NULL,
-    description TEXT,
+    id                   SERIAL PRIMARY KEY,
+    name                 VARCHAR(50) NOT NULL,
+    description          TEXT,
+    min_seating_capacity INT,
+    max_seating_capacity INT,
+    min_engine_capacity  DECIMAL(4, 2),
+    max_engine_capacity  DECIMAL(4, 2),
 
-    CONSTRAINT uq_name UNIQUE (name)
-
-
+    CONSTRAINT uq_name UNIQUE (name),
+    CONSTRAINT ck_seating_capacity CHECK (
+        (min_seating_capacity IS NULL AND max_seating_capacity IS NULL) OR
+        (min_seating_capacity >= 0 AND max_seating_capacity >= min_seating_capacity)
+        ),
+    CONSTRAINT ck_engine_capacity CHECK (
+        (min_engine_capacity IS NULL AND max_engine_capacity IS NULL) OR
+        (min_engine_capacity >= 0 AND max_engine_capacity >= min_engine_capacity)
+        )
 );
+
 CREATE TABLE vehicles
 (
     id                      SERIAL PRIMARY KEY,
@@ -85,7 +90,6 @@ CREATE TABLE vehicles
     model                   VARCHAR(50) NOT NULL,
     brand                   VARCHAR(50) NOT NULL,
     color                   VARCHAR(50) NOT NULL,
-    engine_type             ENGINE_TYPE NOT NULL,
     engine_capacity         DECIMAL(4, 2),
     seating_capacity        INT,
     year_of_manufacture     INT         NOT NULL,
@@ -167,7 +171,7 @@ CREATE TABLE evidences
     id           SERIAL PRIMARY KEY,
     violation_id INT           NOT NULL,
     type         EVIDENCE_TYPE NOT NULL,
-    url          VARCHAR(255)  NOT NULL,
+    url          TEXT          NOT NULL,
 
     CONSTRAINT fk_violation_id FOREIGN KEY (violation_id) REFERENCES violations (id) ON DELETE CASCADE
 );
@@ -217,9 +221,11 @@ CREATE TABLE accident_resolutions
     CONSTRAINT uq_series_number_resolution UNIQUE (series, number)
 );
 
-CREATE TABLE regions (
+CREATE TABLE regions
+(
+    id          SERIAL PRIMARY KEY,
     region_name VARCHAR(100),
-    code_2004 CHAR(2),
-    code_2013 CHAR(2),
-    code_2021 CHAR(2)
+    code_2004   CHAR(2),
+    code_2013   CHAR(2),
+    code_2021   CHAR(2)
 );
