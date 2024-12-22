@@ -14,6 +14,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+SELECT citizens.id,
+       get_citizen_full_name(citizens.id),
+       citizens.date_of_birth,
+       is_citizen_older_than(citizens.id, 18)
+FROM citizens
+LIMIT 10;
+
 
 CREATE OR REPLACE FUNCTION get_region_by_code(input_code VARCHAR)
     RETURNS VARCHAR AS
@@ -34,6 +41,27 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+SELECT
+    vehicles.id,
+    vehicles.registration_number,
+    get_region_by_code(SUBSTRING(vehicles.registration_number FROM 1 FOR 2))
+FROM vehicles
+WHERE
+    LENGTH(vehicles.registration_number) = 8
+    AND SUBSTRING(vehicles.registration_number FROM 1 FOR 2) IN (
+        SELECT DISTINCT LEFT(code_2004, 2)
+        FROM regions
+        UNION
+        SELECT DISTINCT LEFT(code_2013, 2)
+        FROM regions
+        UNION
+        SELECT DISTINCT LEFT(code_2021, 2)
+        FROM regions
+    )
+GROUP BY
+    get_region_by_code(SUBSTRING(vehicles.registration_number FROM 1 FOR 2)), vehicles.id,
+    vehicles.registration_number;
+
 
 CREATE OR REPLACE FUNCTION get_administrative_offense_info(offense_id INT) RETURNS VARCHAR AS
 $$
@@ -53,6 +81,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+SELECT
+    violations.id,
+    violations.time_of_violation,
+    violations.description,
+    get_administrative_offense_info(violations.administrative_offense_id)
+FROM violations
+LIMIT 10;
+
+
 CREATE OR REPLACE FUNCTION get_officer_protocol_count(officer_id INT)
     RETURNS INT AS
 $$
@@ -68,6 +106,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+SELECT
+    police_officers.id,
+    get_citizen_full_name(police_officers.id),
+    get_officer_protocol_count(police_officers.id)
+FROM police_officers;
+
+
 CREATE OR REPLACE FUNCTION get_officer_resolution_count(officer_id INT)
     RETURNS INT AS
 $$
@@ -82,6 +128,13 @@ BEGIN
     RETURN resolution_count;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT
+    police_officers.id,
+    get_citizen_full_name(police_officers.id),
+    get_officer_resolution_count(police_officers.id)
+FROM police_officers;
+
 
 CREATE OR REPLACE FUNCTION get_citizen_full_name(citizen_id INT)
     RETURNS VARCHAR AS
@@ -99,6 +152,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+SELECT
+    citizens.id,
+    get_citizen_full_name(citizens.id)
+FROM citizens;
+
+
 CREATE OR REPLACE FUNCTION get_plate_type(registration_number VARCHAR)
     RETURNS VARCHAR AS
 $$
@@ -112,6 +171,13 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT
+    vehicles.id,
+    vehicles.registration_number,
+    get_plate_type(vehicles.registration_number)
+FROM vehicles;
+
 
 
 CREATE OR REPLACE FUNCTION get_total_penalty_fees(driver_id INT)
@@ -131,6 +197,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+SELECT citizens.id,
+       get_citizen_full_name(citizens.id),
+       get_total_penalty_fees(citizens.id)
+FROM citizens;
+
+
 -- Function to get the full name of the owner of a specific vehicle
 CREATE OR REPLACE FUNCTION get_vehicle_owner(vehicle_id INT)
     RETURNS VARCHAR AS
@@ -148,6 +220,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+SELECT
+    vehicles.id,
+    vehicles.registration_number,
+    get_vehicle_owner(vehicles.id)
+FROM vehicles;
+
 CREATE OR REPLACE FUNCTION get_total_violations_for_vehicle(veh_id INT)
 RETURNS INT AS $$
 DECLARE
@@ -161,6 +239,12 @@ BEGIN
     RETURN total_violations;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT
+    vehicles.id,
+    vehicles.registration_number,
+    get_total_violations_for_vehicle(vehicles.id)
+FROM vehicles;
 
 
 
