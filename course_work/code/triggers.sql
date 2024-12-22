@@ -1,18 +1,32 @@
 CREATE OR REPLACE FUNCTION check_engine_capacity()
     RETURNS TRIGGER AS
 $$
+DECLARE
+    min_capacity DECIMAL(4, 2);
+    max_capacity DECIMAL(4, 2);
 BEGIN
-    IF NEW.engine_type = 'electric' AND NEW.engine_capacity IS NOT NULL THEN
-        RAISE EXCEPTION 'Electric vehicles cannot have an engine capacity value.';
-    END IF;
+    SELECT min_engine_capacity, max_engine_capacity
+    INTO min_capacity, max_capacity
+    FROM vehicle_types
+    WHERE id = NEW.vehicle_type_id;
 
-    IF NEW.engine_capacity < 1 OR NEW.engine_capacity > 20 THEN
-        RAISE EXCEPTION  'Vehicles cannot have such engine capacity. ';
+    IF min_capacity IS NULL AND max_capacity IS NULL AND NEW.engine_capacity IS NOT NULL THEN
+        RAISE EXCEPTION 'Unpowered vehicles cannot have an engine capacity value.';
+    ELSIF min_capacity IS NOT NULL AND NEW.engine_capacity < min_capacity THEN
+        RAISE EXCEPTION 'Engine capacity must be at least %.', min_capacity;
+    ELSIF max_capacity IS NOT NULL AND NEW.engine_capacity > max_capacity THEN
+        RAISE EXCEPTION 'Engine capacity must not exceed %.', max_capacity;
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_engine_capacity
+    BEFORE INSERT OR UPDATE
+    ON vehicles
+    FOR EACH ROW
+EXECUTE FUNCTION check_engine_capacity();
 
 CREATE TRIGGER trg_check_engine_capacity
     BEFORE INSERT OR UPDATE
@@ -28,38 +42,18 @@ CREATE OR REPLACE FUNCTION check_seating_capacity()
     RETURNS TRIGGER AS
 $$
 DECLARE
-    min_capacity   INT := NULL;
-    max_capacity   INT := NULL;
-    exact_capacity INT := NULL;
+    min_capacity INT;
+    max_capacity INT;
 BEGIN
-    -- Determine the seating capacity rules based on vehicle type
-    CASE NEW.vehicle_type_id
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Car' OR name = 'Electric Car')
-            THEN min_capacity := 2; max_capacity := 8;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Motorcycle') THEN min_capacity := 1; max_capacity := 2;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Bus') THEN min_capacity := 9;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Truck') THEN exact_capacity := 2;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Trailer') THEN exact_capacity := NULL;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Special Purpose Vehicle')
-            THEN min_capacity := 1; max_capacity := 10;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Dump Truck') THEN exact_capacity := 2;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Agricultural Vehicle')
-            THEN min_capacity := 1; max_capacity := 3;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'ATV') THEN min_capacity := 1; max_capacity := 2;
-        WHEN (SELECT id FROM vehicle_types WHERE name = 'Electric Scooter') THEN exact_capacity := 1;
-        ELSE RAISE EXCEPTION 'Unknown vehicle_type_id: %', NEW.vehicle_type_id;
-        END CASE;
+    SELECT min_seating_capacity, max_seating_capacity
+    INTO min_capacity, max_capacity
+    FROM vehicle_types
+    WHERE id = NEW.vehicle_type_id;
 
-    -- Validate seating capacity based on determined rules
-    IF exact_capacity IS NOT NULL AND NEW.seating_capacity != exact_capacity THEN
-        RAISE EXCEPTION 'Seating capacity must be exactly %.', exact_capacity;
-    ELSIF min_capacity IS NOT NULL AND NEW.seating_capacity < min_capacity THEN
+    IF min_capacity IS NOT NULL AND NEW.seating_capacity < min_capacity THEN
         RAISE EXCEPTION 'Seating capacity must be at least %.', min_capacity;
     ELSIF max_capacity IS NOT NULL AND NEW.seating_capacity > max_capacity THEN
         RAISE EXCEPTION 'Seating capacity must not exceed %.', max_capacity;
-    ELSIF NEW.vehicle_type_id = (SELECT id FROM vehicle_types WHERE name = 'Trailer')
-        AND NEW.seating_capacity IS NOT NULL THEN
-        RAISE EXCEPTION 'Trailer must not have a seating capacity.';
     END IF;
 
     RETURN NEW;
