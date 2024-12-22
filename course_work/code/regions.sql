@@ -26,4 +26,3 @@ VALUES ('AR Krym', 'AK', 'KK', 'TK'),
        ('Chernihivska oblast', 'CB', 'IB', 'OB'),
        ('Chernivetska oblast', 'CE', 'IE', 'OE'),
        ('misto Sevastopol', 'CH', 'IH', 'OH');
-Î
