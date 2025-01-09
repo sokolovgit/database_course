@@ -17,9 +17,9 @@ EXECUTE FUNCTION log_vehicle_deletion();
 
 
 INSERT INTO vehicle (id, registration_number, model, brand, year_of_manufacture, status, vehicle_type_id, capacity, load_capacity, team_id)
-VALUES (33333, 'AB123CD', 'Test Model', 'Test Brand', 2020, 'available', 1, 50, 1000, 1);
+VALUES (33234, 'AB1223CD', 'Test Model', 'Test Brand', 2020, 'available', 1, 50, 1000, 1);
 
-DELETE FROM vehicle WHERE id = 33333;
+DELETE FROM vehicle WHERE id = 33234;
 
 SELECT * FROM vehicle_operations_log WHERE operation = 'DELETE';
 
@@ -42,9 +42,9 @@ EXECUTE FUNCTION log_vehicle_update();
 
 
 INSERT INTO vehicle (id, registration_number, model, brand, year_of_manufacture, status, vehicle_type_id, capacity, load_capacity, team_id)
-VALUES (33334, 'AB123CD', 'Test Model', 'Test Brand', 2020, 'available', 1, 50, 1000, 1);
+VALUES (33234, 'AB1113CD', 'Test Model', 'Test Brand', 2020, 'available', 1, 50, 1000, 1);
 
-UPDATE vehicle SET status = 'available' WHERE id = 33334;
+UPDATE vehicle SET status = 'available' WHERE id = 33234;
 
 SELECT * FROM vehicle_operations_log WHERE operation = 'UPDATE';
 
@@ -67,6 +67,6 @@ FOR EACH ROW
 EXECUTE FUNCTION log_vehicle_insert();
 
 INSERT INTO vehicle (id, registration_number, model, brand, year_of_manufacture, status, vehicle_type_id, capacity, load_capacity, team_id)
-VALUES (33335, 'AB1645CD', 'Test Model', 'Test Brand', 2020, 'available', 1, 50, 1000, 1);
+VALUES (33336, 'AB1445CD', 'Test Model', 'Test Brand', 2020, 'available', 1, 50, 1000, 1);
 
 SELECT * FROM vehicle_operations_log WHERE operation = 'INSERT';

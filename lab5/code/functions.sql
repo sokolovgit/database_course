@@ -18,32 +18,6 @@ SELECT get_available_vehicles_count();
 
 
 -- b. Створення функції, яка повертає таблицю з динамічним набором стовпців
-CREATE OR REPLACE FUNCTION get_vehicle_details_json(route_id_param INT)
-RETURNS JSONB
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    result JSONB;
-BEGIN
-    SELECT jsonb_agg(
-        jsonb_build_object(
-            'vehicle_id', vehicle.id,
-            'model', vehicle.model,
-            'capacity', vehicle.capacity,
-            'status', vehicle.status
-        )
-    )
-    INTO result
-    FROM vehicle
-    INNER JOIN vehicle_route ON vehicle.id = vehicle_route.vehicle_id
-    WHERE vehicle_route.route_id = route_id_param;
-
-    RETURN result;
-END;
-$$;
-
-SELECT get_vehicle_details_json(4);
-
 
 
 -- c. Створення функції, яка повертає таблицю наперед заданої структури
