@@ -300,6 +300,26 @@ ORDER BY
     driver_id,
     violation_count DESC;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --топ моделей автомобілів з найбільшою відносною кількістю правопорушень
 SELECT
     vehicles.brand,
@@ -318,6 +338,28 @@ HAVING
     AND COUNT(vehicles.id) > 200
 ORDER BY
     violation_percentage DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- кількість порушень без протоколів, постанов, із протоколами та постановами, загальна кількість порушень
 SELECT
@@ -455,6 +497,13 @@ ORDER BY
 LIMIT
     10;
 
+
+
+
+
+
+
+
 -- знайти кількість свідків та жертв для протоколів
 SELECT
     accident_protocols.id AS protocol_id,
@@ -490,6 +539,28 @@ GROUP BY
 ORDER BY
     locations.street,
     violation_count DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- Водії, які мають транспортні засоби різних типів
 SELECT

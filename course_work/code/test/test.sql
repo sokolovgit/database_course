@@ -59,3 +59,7 @@ BEGIN
 END $$;
 
 SELECT * FROM violations WHERE violations.id = 1411  ;
+
+SELECT * FROM administrative_offenses;
+
+insert into violations (time_of_violation, description, vehicle_id, location_id, administrative_offense_id, traffic_rule_id) values ('2024-12-27 14:70:00+02', 'test', 1, 1, 1, 1);

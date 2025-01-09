@@ -78,6 +78,35 @@ JOIN
     pg_catalog.pg_roles r ON r.rolname = u.usename
 WHERE
     u.usename LIKE 'cw%';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -------------------------------
 -- Обмеження доступу для ролі driver (фільтрація за власним citizen_id або driver_id)
 CREATE

@@ -203,6 +203,30 @@ SELECT citizens.id,
 FROM citizens;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- Function to get the full name of the owner of a specific vehicle
 CREATE OR REPLACE FUNCTION get_vehicle_owner(vehicle_id INT)
     RETURNS VARCHAR AS

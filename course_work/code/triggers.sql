@@ -214,10 +214,10 @@ EXECUTE FUNCTION check_violation_exclusivity();
 
 INSERT INTO accident_protocols (id, series, number, defendant_explanation, time_of_drawing_up, violation_id,
                                 police_officer_id, defendant_id)
-VALUES (100006, 'GD', '043653', 'some text', '2024-12-16 16:31:31.952822 +00:00', 1, 1, 1);
+VALUES (100008, 'GD', '043653', 'some text', '2024-12-16 16:31:31.952822 +00:00', 1, 1, 1);
 
 INSERT INTO accident_resolutions (id, series, number, time_of_consideration, time_of_entry_into_force, violation_id,
                                   police_officer_id, location_id)
-VALUES (100006, 'GD', '043653', '2022-12-16 16:31:31.952822 +00:00', '2024-12-16 16:31:31.952822 +00:00', 1, 1, 1);
+VALUES (100008, 'GD', '042653', '2022-12-16 16:31:31.952822 +00:00', '2024-12-16 16:31:31.952822 +00:00', 1, 1, 1);
 
 
