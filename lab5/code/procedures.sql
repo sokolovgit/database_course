@@ -5,8 +5,6 @@ CREATE OR REPLACE PROCEDURE get_vehicles_for_route(route_id_param INT)
     LANGUAGE plpgsql
 AS
 $$
-DECLARE
-    record RECORD;
 BEGIN
     CREATE TEMP TABLE temp_vehicles
     (
@@ -80,11 +78,11 @@ BEGIN
 END;
 $$;
 
-CALL deactivate_old_vehicles(1971);
+CALL deactivate_old_vehicles(1980);
 
 SELECT *
 FROM vehicle
-WHERE status = 'decommissioned'
+WHERE vehicle.year_of_manufacture < 1980 AND status != 'decommissioned'
 ORDER BY vehicle.year_of_manufacture;
 
 
@@ -107,8 +105,8 @@ SELECT *
 FROM route
 WHERE id NOT IN (SELECT DISTINCT vehicle_route.route_id FROM vehicle_route);
 
-INSERT INTO route (name, start_location, end_location, distance)
-VALUES ('Old Route', 'Point A', 'Point B', 15.0);
+INSERT INTO route (id, name, start_location, end_location, distance)
+VALUES (10000, 'Old Route', 'Point A', 'Point B', 15.0);
 
 
 
@@ -132,8 +130,8 @@ $$;
 
 SELECT calculate_total_passengers(1);
 
-INSERT INTO passenger_record (vehicle_id, route_id, date, passenger_count)
-VALUES (1, 1, CURRENT_DATE, 50);
+INSERT INTO passenger_record (id, vehicle_id, route_id, date, passenger_count)
+VALUES (100000, 1, 1, CURRENT_DATE, 50);
 
 
 -- f. створення процедури оновлення даних в деякій таблиці БД;
@@ -150,7 +148,7 @@ END;
 $$;
 
 
-CALL update_driver_team(1, 2);
+CALL update_driver_team(1, 1);
 
 SELECT *
 FROM driver
